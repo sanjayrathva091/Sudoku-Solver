@@ -9,22 +9,35 @@ module.exports = function (app) {
   .post((req, res) => {
     const { puzzle, coordinate, value } = req.body;
 
+    // Check for missing fields
     if (!puzzle || !coordinate || !value) {
       return res.json({ error: 'Required field(s) missing' });
     }
 
+    // Validate puzzle string
     const validation = solver.validate(puzzle);
     if (validation !== true) {
       return res.json(validation);
     }
 
-    const row = coordinate.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
-    const col = parseInt(coordinate[1]) - 1;
+    // Validate coordinate
+    const rowLetter = coordinate[0].toUpperCase(); // Ensure uppercase for consistency
+    const colNumber = coordinate.slice(1); // Extract the column number
 
-    if (isNaN(col) || row < 0 || row >= 9 || col < 0 || col >= 9) {
+    // Check if the coordinate is valid
+    if (
+      !/^[A-Ia-i]$/.test(rowLetter) || // Row must be A-I (case-insensitive)
+      !/^[1-9]$/.test(colNumber) ||    // Column must be 1-9
+      coordinate.length !== 2           // Coordinate must be exactly 2 characters
+    ) {
       return res.json({ error: 'Invalid coordinate' });
     }
 
+    // Convert coordinate to row and column indices
+    const row = rowLetter.charCodeAt(0) - 'A'.charCodeAt(0); // A=0, B=1, ..., I=8
+    const col = parseInt(colNumber) - 1; // Convert to zero-based index
+
+    // Validate value
     if (!/^[1-9]$/.test(value)) {
       return res.json({ error: 'Invalid value' });
     }
@@ -35,6 +48,7 @@ module.exports = function (app) {
       return res.json({ valid: true });
     }
 
+    // Check for conflicts
     const conflicts = [];
     if (!solver.checkRowPlacement(puzzle, row, col, value)) {
       conflicts.push('row');
@@ -51,6 +65,7 @@ module.exports = function (app) {
     }
 
     res.json({ valid: true });
+
   });
 
   app.route('/api/solve')

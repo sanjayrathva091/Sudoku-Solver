@@ -166,7 +166,7 @@ suite('Functional Tests', () => {
   test('12. Check a puzzle placement with invalid placement coordinate: POST request to /api/check', (done) => {
     chai.request(server)
       .post('/api/check')
-      .send({ puzzle: validPuzzle, coordinate: 'Z2', value: '3' })
+      .send({ puzzle: validPuzzle, coordinate: 'K2', value: '2' })
       .end((err, res) => {
         assert.equal(res.status, 200);
         assert.property(res.body, 'error');
