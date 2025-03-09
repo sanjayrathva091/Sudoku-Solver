@@ -29,6 +29,12 @@ module.exports = function (app) {
       return res.json({ error: 'Invalid value' });
     }
 
+    // Check if the cell is already filled with the same value
+    const currentIndex = row * 9 + col;
+    if (puzzle[currentIndex] === value) {
+      return res.json({ valid: true });
+    }
+
     const conflicts = [];
     if (!solver.checkRowPlacement(puzzle, row, col, value)) {
       conflicts.push('row');

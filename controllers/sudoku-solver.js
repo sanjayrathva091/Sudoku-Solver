@@ -20,16 +20,12 @@ class SudokuSolver {
 
   checkColPlacement(puzzleString, row, column, value) {
     for (let i = 0; i < 9; i++) {
-      // Skip the current cell being checked
-      if (i === row) continue;
-  
-      // Check if the value already exists in the column
       if (puzzleString[i * 9 + column] === value) {
         return false;
       }
     }
     return true;
-  }
+  }  
 
   checkRegionPlacement(puzzleString, row, column, value) {
     const startRow = Math.floor(row / 3) * 3;
